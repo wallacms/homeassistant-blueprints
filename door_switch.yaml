@@ -62,6 +62,12 @@ blueprint:
           unit_of_measurement: sec
           mode: slider
           step: 1
+    check_sun:
+      name: Only turn on if sun is below horizon
+      description: Set to true to only activate this trigger when the sun is down
+      default: true
+      selector:
+        boolean:
     text_notify:
       name: Text noty
       description: "**Example of the text in Italian:** Porta d'ingresso dimentica aperta"
@@ -116,10 +122,11 @@ blueprint:
 mode: restart
 variables:
   light: !input light
-  porta: !input door
+  door: !input door
   tts: !input tts
   push: !input push
   alexa: !input alexa
+  check_sun: !input check_sun
 trigger:
   - platform: state
     entity_id: !input door
@@ -133,7 +140,7 @@ trigger:
       seconds: !input time_door
     id: open
 action:
-  - alias: Avviso porta aperta
+  - alias: Open door warning
     if:
       - condition: trigger
         id: open
@@ -164,27 +171,32 @@ action:
               data:
                 message: !input text_notify
                 entity_id: !input notify_tts
-  - alias: Accensione luce per apertura porta
+  - alias: Turn on light when door opens
     if:
-      - "{{trigger.entity_id == porta and is_state(light,'off')}}"
-      - alias: Dopo tramonto
-        condition: state
-        entity_id: sun.sun
-        state: below_horizon
+      - "{{trigger.entity_id == door and is_state(light,'off')}}"
+      - condition:
+          condition: or
+          conditions:
+            - condition: template
+              value_template: "{{ !check_sun }}"
+            - alias: After sunset
+              condition: state
+              entity_id: sun.sun
+              state: below_horizon
     then:
-      - alias: Accendi luce
+      - alias: Turn on light
         service: homeassistant.turn_on
         target:
           entity_id: !input light
-      - alias: Attendi
+      - alias: Wait
         wait_for_trigger:
-          - alias: Porta chiusa per x sec
+          - alias: Door closed for x seconds
             platform: state
             entity_id: !input door
             to: "off"
             for:
               seconds: !input light_off
-      - alias: Spegni luce
+      - alias: Turn off light
         service: homeassistant.turn_off
         target:
           entity_id: !input light
