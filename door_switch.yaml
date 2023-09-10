@@ -1,7 +1,7 @@
 blueprint:
-  name: Managing a door contact
+  name: Door contact switch light control
   domain: automation
-  description:  "`- Version: 1.0 -`\n\n  # Managing a door contact\n
+  description:  "`- Version: 1.1 -`\n\n  # Managing a door contact\n
             In this project I try to exploit a sensor port for multiple uses.\n
             Automation is divided into two parts:\n 
             #### Turns on a light when the door is opened for a customizable time by following rules:\n
