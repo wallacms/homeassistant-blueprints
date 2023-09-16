@@ -2,7 +2,7 @@ blueprint:
   name: Closet contact sensor light
   domain: automation
   description:  "`- Version: 1.0 -`\n\n  # Closet contact sensor light\n
-            Simple blue print to turn on closet light when door is opened. 
+            Simple blue print to turn on closet light when door is opened.\n
             #### Turns on a light when the door is opened for a customizable time by following rules:\n
                   - You can insert switch and light\n
                   - The light is turned on/off only if the initial state was not on\n
