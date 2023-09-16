@@ -1,11 +1,9 @@
 blueprint:
-  name: Door contact switch light control
+  name: Closet contact sensor light
   domain: automation
-  description:  "`- Version: 1.1 -`\n\n  # Managing a door contact\n
-            In this project I try to exploit a sensor port for multiple uses.\n
-            Automation is divided into two parts:\n 
+  description:  "`- Version: 1.0 -`\n\n  # Closet contact sensor light\n
+            Simple blue print to turn on closet light when door is opened. 
             #### Turns on a light when the door is opened for a customizable time by following rules:\n
-                  - Let it be after sunset\n
                   - You can insert switch and light\n
                   - The light is turned on/off only if the initial state was not on\n
                   - The light is turned off after a customizable time that starts from the moment the door is closed\n
@@ -62,12 +60,6 @@ blueprint:
           unit_of_measurement: sec
           mode: slider
           step: 1
-    check_sun:
-      name: Only turn on if sun is below horizon
-      description: Set to true to only activate this trigger when the sun is down
-      default: true
-      selector:
-        boolean:
     text_notify:
       name: Text noty
       description: "**Example of the text in Italian:** Porta d'ingresso dimentica aperta"
@@ -126,7 +118,6 @@ variables:
   tts: !input tts
   push: !input push
   alexa: !input alexa
-  check_sun: !input check_sun
 trigger:
   - platform: state
     entity_id: !input door
@@ -174,15 +165,6 @@ action:
   - alias: Turn on light when door opens
     if:
       - "{{trigger.entity_id == door and is_state(light,'off')}}"
-      - condition:
-          condition: or
-          conditions:
-            - condition: template
-              value_template: "{{ !check_sun }}"
-            - alias: After sunset
-              condition: state
-              entity_id: sun.sun
-              state: below_horizon
     then:
       - alias: Turn on light
         service: homeassistant.turn_on
